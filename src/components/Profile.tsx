@@ -1,48 +1,121 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, type ChangeEvent, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 interface ProfileProps {
   isAuthenticated: boolean;
 }
 
 const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
-  const [profileImage, setProfileImage] = useState<string>('https://via.placeholder.com/150');
+  const [profileImage, setProfileImage] = useState<string>(
+    "https://via.placeholder.com/150"
+  );
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      const { data, error } = await supabase
+        .from("profile_img")
+        .select("url")
+        .eq("id", "profile_photo")
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile image:", error);
+      } else if (data) {
+        setProfileImage(data.url);
+      }
+    };
+
+    fetchProfileImage();
+  }, []);
+
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target && typeof e.target.result === 'string') {
-          setProfileImage(e.target.result);
+      const file = event.target.files[0];
+      const filePath = `public/profile_photo_${Date.now()}_${file.name}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('covers')
+        .upload(filePath, file, { cacheControl: '3600' });
+
+      if (uploadError) {
+        console.error("Error uploading profile image:", uploadError);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("covers")
+        .getPublicUrl(filePath);
+
+      if (publicUrlData) {
+        const newUrl = publicUrlData.publicUrl;
+        setProfileImage(newUrl);
+
+        const { error: dbError } = await supabase
+          .from("profile_img")
+          .upsert({ id: "profile_photo", url: newUrl }, { onConflict: "id" });
+
+        if (dbError) {
+          console.error("Error updating profile image URL in DB:", dbError);
         }
-      };
-      reader.readAsDataURL(event.target.files[0]);
+      }
     }
   };
 
+  const signInWithGithub = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+    });
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
-    <div className="relative -mt-20 p-4 max-w-4xl mx-auto flex items-end space-x-6">
-      <div className="relative group">
-        <img 
-          src={profileImage} 
-          alt="Profile" 
-          className="w-36 h-36 rounded-full border-4 border-white bg-gray-200 object-cover"
+    <div className='relative -mt-20 flex items-end space-x-6'>
+      <div className='relative group'>
+        <img
+          src={profileImage}
+          alt='Profile'
+          className='w-36 h-36 rounded-full border-4 border-white bg-gray-200 object-cover'
         />
         {isAuthenticated && (
-          <label htmlFor="profile-image-upload" className="absolute bottom-1 right-1 bg-white text-black p-2 rounded-full text-xs cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <label
+            htmlFor='profile-image-upload'
+            className='absolute bottom-1 right-1 border border-blue-500 text-blue-500 p-2 rounded-full text-xs cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md hover:bg-blue-500 hover:text-white'>
             Edit
-            <input 
-              id="profile-image-upload" 
-              type="file" 
-              accept="image/*" 
-              className="hidden"
+            <input
+              id='profile-image-upload'
+              type='file'
+              accept='image/*'
+              className='hidden'
               onChange={handleImageChange}
             />
           </label>
         )}
       </div>
       <div>
-        <h2 className="text-3xl font-bold">Mirae Jo</h2>
-        <p className="text-gray-600">Frontend Developer | Cat Lover | Coffee Addict</p>
+        <h2 className='text-5xl font-bold text-white drop-shadow-lg'>Mirae Jo</h2>
+        <p className='text-gray-300 text-lg'>
+          Frontend Developer | Cat Lover | Coffee Addict
+        </p>
+        <div className="mt-2">
+          {isAuthenticated ? (
+            <button
+              onClick={signOut}
+              className="text-gray-500 py-0 transition-colors duration-300 hover:text-blue-500 cursor-pointer hover:underline"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={signInWithGithub}
+              className="text-gray-500 py-0 transition-colors duration-300 hover:text-blue-500 cursor-pointer hover:underline"
+            >
+              Admin Login
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
