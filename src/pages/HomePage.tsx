@@ -2,10 +2,12 @@ import React, { useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Profile from "../components/Profile";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { useAuth } from '../context/AuthContext';
-import { usePosts } from '../context/PostContext';
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import remarkGfm from "remark-gfm";
+import { useAuth } from "../context/AuthContext";
+import { usePosts } from "../context/PostContext";
 
 const HomePage = () => {
   const { isAuthenticated } = useAuth();
@@ -95,7 +97,34 @@ const HomePage = () => {
                 </div>
               )}
               <div className='px-6 pt-4 pb-10'>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code: ({
+                      node,
+                      inline,
+                      className,
+                      children,
+                      ...props
+                    }: React.HTMLAttributes<HTMLElement> & {
+                      node?: any;
+                      inline?: boolean;
+                    }) => {
+                      return !inline ? (
+                        <SyntaxHighlighter
+                          style={atomDark as any}
+                          language='javascript'
+                          PreTag='div'
+                          {...props}>
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}>
                   {selectedPost.content}
                 </ReactMarkdown>
               </div>
