@@ -5,7 +5,7 @@ import Profile from "../components/Profile";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { useAuth } from "../context/AuthContext";
 import { usePosts } from "../context/PostContext";
 
@@ -94,21 +94,21 @@ const HomePage = () => {
                   {selectedPost.title}
                 </h4>
               </div>
-              <div className='px-6 pt-4 pb-10'>
+              <div className='p-10'>
                 <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
+                  remarkPlugins={[remarkBreaks]}
                   components={{
                     h1: ({ node, ...props }) => (
                       <h1 className='text-4xl font-bold my-4' {...props} />
                     ),
                     h2: ({ node, ...props }) => (
-                      <h2 className='text-3xl font-bold my-3' {...props} />
+                      <h2 className='text-3xl font-bold my-4' {...props} />
                     ),
                     h3: ({ node, ...props }) => (
-                      <h3 className='text-2xl font-bold my-2' {...props} />
+                      <h3 className='text-2xl font-bold my-3' {...props} />
                     ),
                     h4: ({ node, ...props }) => (
-                      <h4 className='text-xl font-bold my-2' {...props} />
+                      <h4 className='text-xl font-bold my-3' {...props} />
                     ),
                     h5: ({ node, ...props }) => (
                       <h5 className='text-lg font-bold my-2' {...props} />
@@ -121,6 +121,9 @@ const HomePage = () => {
                         className='border-l-4 border-gray-300 pl-4 italic my-4'
                         {...props}
                       />
+                    ),
+                    p: ({ node, ...props }) => (
+                      <p className='mb-4.5' {...props} />
                     ),
                     code: ({
                       node,
