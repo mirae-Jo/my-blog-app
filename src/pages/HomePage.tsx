@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Profile from "../components/Profile";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import { useAuth } from "../context/AuthContext";
 import { usePosts } from "../context/PostContext";
@@ -112,7 +112,7 @@ const HomePage = () => {
                     }) => {
                       return !inline ? (
                         <SyntaxHighlighter
-                          style={atomDark as any}
+                          style={coy as any}
                           language='javascript'
                           PreTag='div'
                           {...props}>
