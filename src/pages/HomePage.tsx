@@ -82,24 +82,46 @@ const HomePage = () => {
           </div>
           {selectedPost && (
             <div className='bg-white rounded-xl shadow-lg mb-16'>
-              <div className='px-6 pt-6'>
-                <h4 className='font-bold text-4xl text-gray-900 mb-4'>
+              <div
+                className='relative h-64 bg-cover bg-center flex items-center justify-center rounded-t-xl overflow-hidden'
+                style={
+                  selectedPost.imageUrl
+                    ? { backgroundImage: `url(${selectedPost.imageUrl})` }
+                    : { backgroundColor: "#333" }
+                }>
+                <div className='absolute inset-0 bg-black opacity-30'></div>
+                <h4 className='relative z-10 font-bold text-4xl text-white text-center px-4'>
                   {selectedPost.title}
                 </h4>
               </div>
-              {selectedPost.imageUrl && (
-                <div className='px-6 py-6'>
-                  <img
-                    src={selectedPost.imageUrl}
-                    alt={selectedPost.title}
-                    className='w-full h-auto max-h-96 object-contain object-left'
-                  />
-                </div>
-              )}
               <div className='px-6 pt-4 pb-10'>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
+                    h1: ({ node, ...props }) => (
+                      <h1 className='text-4xl font-bold my-4' {...props} />
+                    ),
+                    h2: ({ node, ...props }) => (
+                      <h2 className='text-3xl font-bold my-3' {...props} />
+                    ),
+                    h3: ({ node, ...props }) => (
+                      <h3 className='text-2xl font-bold my-2' {...props} />
+                    ),
+                    h4: ({ node, ...props }) => (
+                      <h4 className='text-xl font-bold my-2' {...props} />
+                    ),
+                    h5: ({ node, ...props }) => (
+                      <h5 className='text-lg font-bold my-2' {...props} />
+                    ),
+                    h6: ({ node, ...props }) => (
+                      <h6 className='text-base font-bold my-2' {...props} />
+                    ),
+                    blockquote: ({ node, ...props }) => (
+                      <blockquote
+                        className='border-l-4 border-gray-300 pl-4 italic my-4'
+                        {...props}
+                      />
+                    ),
                     code: ({
                       node,
                       inline,

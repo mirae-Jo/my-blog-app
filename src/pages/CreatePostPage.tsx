@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import SimpleMdeReact from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 import { usePosts } from '../context/PostContext';
+import { supabase } from '../lib/supabaseClient';
 
 const CreatePostPage: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const { handleAddPost } = usePosts();
 
@@ -18,17 +20,52 @@ const CreatePostPage: React.FC = () => {
       placeholder: "Write your post content here...",
       toolbar: [
         "bold", "italic", "heading", "|", "quote", "code", "unordered-list", "ordered-list", "|",
-        "link", "image", "|", "preview", "guide"
+        "link", "image", "|", "guide"
       ] as any[],
     };
   }, []);
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImageFile(event.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title && content) {
-      await handleAddPost(title, content, imageUrl);
-      navigate('/'); // 게시물 추가 후 메인 페이지로 이동
+    if (!title || !content) {
+      alert("제목과 내용을 입력해주세요.");
+      return;
     }
+
+    setUploading(true);
+    let imageUrl = '';
+
+    if (imageFile) {
+      const filePath = `post_images/${Date.now()}_${imageFile.name}`;
+      const { data: _data, error } = await supabase.storage
+        .from('post-images') // Supabase Storage 버킷 이름
+        .upload(filePath, imageFile, { cacheControl: '3600' });
+
+      if (error) {
+        console.error("Error uploading image:", error);
+        alert("이미지 업로드에 실패했습니다: " + error.message);
+        setUploading(false);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(filePath);
+
+      if (publicUrlData) {
+        imageUrl = publicUrlData.publicUrl;
+      }
+    }
+
+    await handleAddPost(title, content, imageUrl);
+    setUploading(false);
+    navigate('/'); // 게시물 추가 후 메인 페이지로 이동
   };
 
   return (
@@ -56,13 +93,13 @@ const CreatePostPage: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="imageUrl" className="block text-gray-700 text-sm font-bold mb-2">Image URL (Optional)</label>
+            <label htmlFor="imageFile" className="block text-gray-700 text-sm font-bold mb-2">Image Upload (Optional)</label>
             <input
-              type="text"
-              id="imageUrl"
+              type="file"
+              id="imageFile"
+              accept="image/*"
               className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              onChange={handleFileChange}
             />
           </div>
           <div className="flex justify-end space-x-4 mt-6">
@@ -70,14 +107,16 @@ const CreatePostPage: React.FC = () => {
               type="button"
               onClick={() => navigate('/')}
               className="border border-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200 ease-in-out hover:bg-gray-400 hover:text-white"
+              disabled={uploading}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="border border-blue-500 text-blue-500 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200 ease-in-out hover:bg-blue-500 hover:text-white"
+              disabled={uploading}
             >
-              Add Post
+              {uploading ? 'Uploading...' : 'Add Post'}
             </button>
           </div>
         </form>
