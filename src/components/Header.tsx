@@ -62,25 +62,29 @@ const Header: React.FC<HeaderProps> = ({ isAuthenticated }) => {
     }
   };
 
-  console.log(coverImage);
+  
 
   return (
     <header
       className='relative h-64 bg-gray-300 bg-cover bg-center group'
       style={{ backgroundImage: `url(${coverImage})` }}>
       {isAuthenticated && (
-        <label
-          htmlFor='cover-image-upload'
-          className='absolute top-6 right-6 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg text-base font-bold shadow-lg hover:bg-blue-500 hover:text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300 sm:top-4 sm:right-4 sm:px-4 sm:py-2 sm:text-sm'>
-          Edit Cover Photo
-          <input
-            id='cover-image-upload'
-            type='file'
-            accept='image/*'
-            className='hidden'
-            onChange={handleImageChange}
-          />
-        </label>
+        <div className='absolute top-0 left-0 w-full h-full flex justify-end items-start'>
+          <div className='max-w-4xl mx-auto w-full relative'>
+            <label
+              htmlFor='cover-image-upload'
+              className='absolute top-6 right-4 sm:right-6 lg:right-8 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg text-base font-bold shadow-lg hover:bg-blue-500 hover:text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300 sm:top-4 sm:px-4 sm:py-2 sm:text-sm'>
+              Edit Cover Photo
+              <input
+                id='cover-image-upload'
+                type='file'
+                accept='image/*'
+                className='hidden'
+                onChange={handleImageChange}
+              />
+            </label>
+          </div>
+        </div>
       )}
     </header>
   );

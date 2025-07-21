@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Outlet, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Profile from "./components/Profile";
 
 import CreatePostPage from "./pages/CreatePostPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 import { supabase } from "./lib/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
@@ -51,12 +52,12 @@ const HomePage = ({
     if (mouseX < width * threshold) {
       // Mouse is on the left edge
       scrollTimeoutRef.current = window.setTimeout(() => {
-        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
       }, 100); // Delay for smoother feel
     } else if (mouseX > width * (1 - threshold)) {
       // Mouse is on the right edge
       scrollTimeoutRef.current = window.setTimeout(() => {
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
       }, 100); // Delay for smoother feel
     }
   }, []);
@@ -76,17 +77,16 @@ const HomePage = ({
     };
   }, []);
 
-
   return (
-    <div className='font-sans bg-gray-50 min-h-screen pb-10'>
+    <div className='font-regular bg-gray-50 min-h-screen pb-10'>
       <Header isAuthenticated={isAuthenticated} />
       <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
         <Profile isAuthenticated={isAuthenticated} />
       </div>
       <main className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <section className='mt-12'>
-          <div className='flex items-center justify-between mb-6'>
-            <h3 className='text-3xl font-bold text-gray-800'>My Posts</h3>
+        <section className='mt-18'>
+          <div className='flex items-center justify-between mb-4'>
+            <h3 className='text-[1.6rem] font-bold text-gray-700'>My Posts</h3>
             {isAuthenticated && (
               <Link
                 to='/create-post'
@@ -94,7 +94,6 @@ const HomePage = ({
                 + New Post
               </Link>
             )}
-            
           </div>
           {selectedPost && (
             <div className='bg-white rounded-xl shadow-lg mb-16'>
@@ -124,8 +123,7 @@ const HomePage = ({
             ref={scrollContainerRef}
             className='flex overflow-x-auto space-x-6 pb-4 scroll-smooth scroll-container snap-x snap-mandatory'
             onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
+            onMouseLeave={handleMouseLeave}>
             {otherPosts.length === 0 && !isAuthenticated && !selectedPost && (
               <p className='text-gray-600 text-lg flex-shrink-0'>
                 No posts yet. Check back later!
@@ -135,8 +133,7 @@ const HomePage = ({
               <div
                 key={post.id}
                 className='flex-shrink-0 w-64 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start'
-                onClick={() => setSelectedPost(post)}
-              >
+                onClick={() => setSelectedPost(post)}>
                 {post.imageUrl && (
                   <img
                     src={post.imageUrl}
@@ -166,33 +163,42 @@ function App() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const { data, error } = await supabase
-        .from("post")
-        .select("id, title, content, img_url, create_at")
-        .order("create_at", { ascending: false }); // 최신 글부터 가져오기
+      try {
+        const { data, error } = await supabase
+          .from("post")
+          .select("id, title, content, img_url, create_at")
+          .order("create_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching posts:", error);
-        return;
-      }
-
-      if (data) {
-        const fetchedPosts: Post[] = data.map((post) => ({
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          imageUrl: post.img_url || undefined,
-          create_at: post.create_at,
-        }));
-        setPosts(fetchedPosts);
-        if (fetchedPosts.length > 0) {
-          setSelectedPost(fetchedPosts[0]); // 가장 최신 글을 선택된 글로 설정
+        if (error) {
+          console.error("Error fetching posts:", error);
+          return;
         }
+
+        if (data) {
+          const fetchedPosts: Post[] = data.map((post) => ({
+            id: post.id,
+            title: post.title,
+            content: post.content,
+            imageUrl: post.img_url || undefined,
+            create_at: post.create_at,
+          }));
+          setPosts(fetchedPosts);
+          if (fetchedPosts.length > 0 && selectedPost === null) {
+            setSelectedPost(fetchedPosts[0]);
+          }
+        }
+      } catch (networkError) {
+        console.error("Network error fetching posts:", networkError);
       }
     };
 
-    fetchPosts();
+    if (posts.length === 0) {
+      // posts가 비어있을 때만 fetchPosts 호출
+      fetchPosts();
+    }
+  }, [posts, selectedPost]); // selectedPost는 setSelectedPost에 의해 변경되므로 의존성 배열에 유지
 
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsAuthenticated(!!session);
@@ -200,13 +206,13 @@ function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      setSession(session);
-      setIsAuthenticated(!!session);
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setIsAuthenticated(!!newSession);
     });
 
     return () => subscription.unsubscribe();
-  }, [session]);
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   const handleAddPost = async (
     title: string,
@@ -246,12 +252,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (posts.length > 0 && !selectedPost) {
-      setSelectedPost(posts[posts.length - 1]); // Set the latest post as selected on initial load
-    }
-  }, [posts, selectedPost]);
-
   return (
     <Routes>
       <Route
@@ -265,12 +265,28 @@ function App() {
           />
         }
       />
-      <Route
-        path='/create-post'
-        element={<CreatePostPage onAddPost={handleAddPost} />}
-      />
+      <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+        <Route
+          path='/create-post'
+          element={<CreatePostPage onAddPost={handleAddPost} />}
+        />
+      </Route>
+      <Route path='/admin' element={<AdminLoginPage />} />
     </Routes>
   );
 }
+
+const ProtectedRoute = ({
+  isAuthenticated,
+  children,
+}: {
+  isAuthenticated: boolean;
+  children?: React.ReactNode;
+}) => {
+  if (!isAuthenticated) {
+    return <Navigate to='/admin' replace />;
+  }
+  return children ? children : <Outlet />;
+};
 
 export default App;

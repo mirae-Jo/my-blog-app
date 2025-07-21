@@ -61,15 +61,7 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
     }
   };
 
-  const signInWithGithub = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'github',
-    });
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+  
 
   return (
     <div className='relative -mt-20 flex items-end space-x-6'>
@@ -100,21 +92,6 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
           Frontend Developer | Cat Lover | Coffee Addict
         </p>
         <div className="mt-2">
-          {isAuthenticated ? (
-            <button
-              onClick={signOut}
-              className="text-gray-500 py-0 transition-colors duration-300 hover:text-blue-500 cursor-pointer hover:underline"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={signInWithGithub}
-              className="text-gray-500 py-0 transition-colors duration-300 hover:text-blue-500 cursor-pointer hover:underline"
-            >
-              Admin Login
-            </button>
-          )}
         </div>
       </div>
     </div>
