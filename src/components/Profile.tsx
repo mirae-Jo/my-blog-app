@@ -1,11 +1,9 @@
 import React, { useState, type ChangeEvent, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { useAuth } from '../context/AuthContext';
 
-interface ProfileProps {
-  isAuthenticated: boolean;
-}
-
-const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
+const Profile: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [profileImage, setProfileImage] = useState<string>(
     "https://via.placeholder.com/150"
   );
@@ -34,8 +32,8 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
       const filePath = `public/profile_photo_${Date.now()}_${file.name}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('covers')
-        .upload(filePath, file, { cacheControl: '3600' });
+        .from("covers")
+        .upload(filePath, file, { cacheControl: "3600" });
 
       if (uploadError) {
         console.error("Error uploading profile image:", uploadError);
@@ -61,8 +59,6 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
     }
   };
 
-  
-
   return (
     <div className='relative -mt-20 flex items-end space-x-6'>
       <div className='relative group'>
@@ -87,12 +83,10 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated }) => {
         )}
       </div>
       <div>
-        <h2 className='text-5xl font-bold text-white drop-shadow-lg'>Mirae Jo</h2>
-        <p className='text-gray-300 text-lg'>
-          Frontend Developer | Cat Lover | Coffee Addict
+        <h2 className='text-6xl text-white drop-shadow-lg mb-1'>미래</h2>
+        <p className='text-gray-400 text-lg'>
+          Frontend Developer | 포챠코 Lover | 소비 중독
         </p>
-        <div className="mt-2">
-        </div>
       </div>
     </div>
   );

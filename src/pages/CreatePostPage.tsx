@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SimpleMdeReact from 'react-simplemde-editor';
+import 'easymde/dist/easymde.min.css';
+import { usePosts } from '../context/PostContext';
 
-interface CreatePostPageProps {
-  onAddPost: (title: string, content: string, imageUrl: string) => void;
-}
-
-const CreatePostPage: React.FC<CreatePostPageProps> = ({ onAddPost }) => {
+const CreatePostPage: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const navigate = useNavigate();
+  const { handleAddPost } = usePosts();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const mdeOptions = React.useMemo(() => {
+    return {
+      spellChecker: false,
+      autofocus: true,
+      placeholder: "Write your post content here...",
+      toolbar: [
+        "bold", "italic", "heading", "|", "quote", "code", "unordered-list", "ordered-list", "|",
+        "link", "image", "|", "preview", "guide"
+      ] as any[],
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title && content) {
-      onAddPost(title, content, imageUrl);
+      await handleAddPost(title, content, imageUrl);
       navigate('/'); // 게시물 추가 후 메인 페이지로 이동
     }
   };
@@ -37,13 +49,11 @@ const CreatePostPage: React.FC<CreatePostPageProps> = ({ onAddPost }) => {
           </div>
           <div>
             <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">Content</label>
-            <textarea
-              id="content"
-              className="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out h-48 resize-y"
+            <SimpleMdeReact
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-            ></textarea>
+              onChange={setContent}
+              options={mdeOptions}
+            />
           </div>
           <div>
             <label htmlFor="imageUrl" className="block text-gray-700 text-sm font-bold mb-2">Image URL (Optional)</label>

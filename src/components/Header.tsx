@@ -1,11 +1,9 @@
 import React, { useState, type ChangeEvent, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { useAuth } from '../context/AuthContext';
 
-interface HeaderProps {
-  isAuthenticated: boolean;
-}
-
-const Header: React.FC<HeaderProps> = ({ isAuthenticated }) => {
+const Header: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [coverImage, setCoverImage] = useState<string>(
     "https://via.placeholder.com/1500x300"
   );
