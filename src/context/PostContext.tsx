@@ -45,14 +45,11 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
           create_at: post.create_at,
         }));
         setPosts(fetchedPosts);
-        if (fetchedPosts.length > 0 && selectedPost === null) {
-          setSelectedPost(fetchedPosts[0]);
-        }
       }
     } catch (networkError) {
       console.error("Network error fetching posts:", networkError);
     }
-  }, [selectedPost]);
+  }, []);
 
   const handleAddPost = useCallback(async (title: string, content: string, imageUrl: string) => {
     const newId = uuidv4();
@@ -89,10 +86,14 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    if (posts.length === 0) {
-      fetchPosts();
+    fetchPosts();
+  }, [fetchPosts]);
+
+  useEffect(() => {
+    if (posts.length > 0 && selectedPost === null) {
+      setSelectedPost(posts[0]);
     }
-  }, [posts, fetchPosts]);
+  }, [posts, selectedPost]);
 
   return (
     <PostContext.Provider value={{ posts, selectedPost, setSelectedPost, fetchPosts, handleAddPost }}>
