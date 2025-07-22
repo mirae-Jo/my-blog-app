@@ -1,6 +1,6 @@
 import React, { useState, type ChangeEvent, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 
 const Profile: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -83,8 +83,8 @@ const Profile: React.FC = () => {
         )}
       </div>
       <div>
-        <h2 className='text-6xl text-white drop-shadow-lg mb-1'>미래</h2>
-        <p className='text-gray-400 text-lg'>
+        <h2 className='text-6xl text-black drop-shadow-lg mb-0.5'>미래</h2>
+        <p className='text-gray-400 text-[1.1rem]'>
           Frontend Developer | 포챠코 Lover | 소비 중독
         </p>
       </div>
