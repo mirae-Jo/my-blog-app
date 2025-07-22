@@ -2,13 +2,13 @@ import React, { createContext, useState, useEffect, useContext, useCallback } fr
 import { supabase } from '../lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
-interface Post {
+export type Post = {
   id: string;
   title: string;
   content: string;
   imageUrl?: string;
   create_at: Date;
-}
+};
 
 interface PostContextType {
   posts: Post[];
