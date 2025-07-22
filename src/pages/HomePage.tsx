@@ -169,16 +169,18 @@ const HomePage = () => {
             {otherPosts.map((post) => (
               <div
                 key={post.id}
-                className='flex-shrink-0 w-64 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start'
+                className='flex-shrink-0 w-64 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start flex flex-col'
                 onClick={() => setSelectedPost(post)}>
-                {post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    alt={post.title}
-                    className='w-full h-48 object-cover'
-                  />
-                )}
-                <div className='p-6'>
+                <div className='w-full h-48 bg-white flex-shrink-0'>
+                  {post.imageUrl && (
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      className='w-full h-full object-cover'
+                    />
+                  )}
+                </div>
+                <div className='p-6 flex-grow flex flex-col'>
                   <h4 className='font-bold text-xl text-gray-900 mb-2'>
                     {post.title}
                   </h4>
