@@ -1,12 +1,14 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-import CreatePostPage from "./pages/CreatePostPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import { AuthProvider } from "./context/AuthContext";
 import { PostProvider } from "./context/PostContext";
+
+const CreatePostPage = lazy(() => import("./pages/CreatePostPage"));
 
 function App() {
   return (
@@ -15,7 +17,14 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='/create-post' element={<CreatePostPage />} />
+            <Route
+              path='/create-post'
+              element={
+                <Suspense fallback={<div>Loading...</div>}>
+                  <CreatePostPage />
+                </Suspense>
+              }
+            />
           </Route>
           <Route path='/admin' element={<AdminLoginPage />} />
         </Routes>
