@@ -53,6 +53,13 @@ const SelectedPost: React.FC<SelectedPostProps> = ({ post }) => {
               />
             ),
             p: ({ node, ...props }) => <p className='mb-4.5' {...props} />,
+            ul: ({ node, ...props }) => (
+              <ul className='list-disc pl-5 mb-4' {...props} />
+            ),
+            ol: ({ node, ...props }) => (
+              <ol className='list-decimal pl-5 mb-4' {...props} />
+            ),
+            li: ({ node, ...props }) => <li className='mb-2' {...props} />,
             code: ({
               node,
               inline,
