@@ -83,7 +83,6 @@ const CreatePostPage: React.FC = () => {
                 components: {
                   pre: (props) => <pre className='not-prose' {...props} />,
                   code: ({
-                    node,
                     inline,
                     className,
                     children,
@@ -139,3 +138,5 @@ const CreatePostPage: React.FC = () => {
     </div>
   );
 };
+
+export default CreatePostPage;
