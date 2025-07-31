@@ -18,9 +18,7 @@ const CreatePostPage: React.FC = () => {
       spellChecker: false,
       autofocus: true,
       placeholder: "Write your post content here...",
-      indentWithTabs: true, // 탭 사용
       tabSize: 4, // 탭 사이즈 4칸
-      smartIndent: true, // 자동 들여쓰기 다시 활성화
       toolbar: [
         "bold",
         "italic",
