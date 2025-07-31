@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { usePosts } from '../context/PostContext';
 import { supabase } from '../lib/supabaseClient';
-import rehypeSanitize from 'rehype-sanitize';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const CreatePostPage: React.FC = () => {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('**Hello world!!!**');
+  const [content, setContent] = useState('Hello world!');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
@@ -79,7 +80,30 @@ const CreatePostPage: React.FC = () => {
               onChange={(value) => setContent(value || '')}
               height={400}
               previewOptions={{
-                rehypePlugins: [[rehypeSanitize]],
+                components: {
+                  pre: (props) => <pre className='not-prose' {...props} />,
+                  code: ({
+                    node,
+                    inline,
+                    className,
+                    children,
+                    ...props
+                  }: any) => {
+                    return !inline ? (
+                      <SyntaxHighlighter
+                        style={coy as any}
+                        language='javascript'
+                        PreTag='div'
+                        {...props}>
+                        {String(children).replace(/\n$/, "")}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }
               }}
             />
           </div>
@@ -115,5 +139,3 @@ const CreatePostPage: React.FC = () => {
     </div>
   );
 };
-
-export default CreatePostPage;
