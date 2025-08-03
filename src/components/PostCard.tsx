@@ -10,7 +10,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   return (
     <div
       key={post.id}
-      className='flex-shrink-0 w-64 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start flex flex-col'
+      className='flex-shrink-0 w-56 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start flex flex-col'
       onClick={() => onClick(post)}>
       <div className='w-full h-48 bg-gray-200 flex-shrink-0'>
         {post.imageUrl && (
