@@ -1,25 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import type { Session } from "@supabase/supabase-js";
+import { useAuth } from '../context/AuthContext';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { session, authError } = useAuth();
 
   const signInWithGithub = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -28,10 +14,6 @@ const AdminLoginPage: React.FC = () => {
 
     if (error) {
       console.error('Error signing in with GitHub:', error.message);
-      alert('로그인에 실패했습니다: ' + error.message);
-    } else {
-      // 로그인 성공 후 홈으로 리다이렉트
-      navigate('/');
     }
   };
 
@@ -39,7 +21,6 @@ const AdminLoginPage: React.FC = () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error signing out:', error.message);
-      alert('로그아웃에 실패했습니다: ' + error.message);
     } else {
       navigate('/');
     }
@@ -53,6 +34,11 @@ const AdminLoginPage: React.FC = () => {
             Admin Login
           </h2>
         </div>
+        {authError && (
+          <div className="text-red-500 text-center p-2 bg-red-100 border border-red-400 rounded">
+            {authError}
+          </div>
+        )}
         <div className='mt-8 space-y-6'>
           {session ? (
             <button
