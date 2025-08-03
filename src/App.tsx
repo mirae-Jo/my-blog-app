@@ -6,6 +6,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import { PostProvider } from "./context/PostContext";
+import { Toaster } from "./components/ui/toaster";
 
 const CreatePostPage = lazy(() => import("./pages/CreatePostPage"));
 
@@ -26,6 +27,7 @@ function App() {
         </Route>
         <Route path='/admin' element={<AdminLoginPage />} />
       </Routes>
+      <Toaster />
     </PostProvider>
   );
 }

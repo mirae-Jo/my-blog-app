@@ -1,24 +1,25 @@
-import type { ReactNode } from 'react';
-import { createContext, useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
-import type { Session } from '@supabase/supabase-js';
+import type { ReactNode } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
+import type { Session } from "@supabase/supabase-js";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   session: Session | null;
-  authError: string | null;
-  setAuthError: React.Dispatch<React.SetStateAction<string | null>>;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   setSession: React.Dispatch<React.SetStateAction<Session | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,14 +29,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
 
         if (userEmail !== adminEmail) {
-          setAuthError("권한이 없는 사용자입니다. 잠시 후 홈으로 이동합니다.");
+          toast({
+            title: "인증 실패",
+            description: "권한이 없는 사용자입니다. 홈으로 이동합니다.",
+            variant: "destructive",
+            duration: 2000,
+          });
           await supabase.auth.signOut();
           setTimeout(() => {
-            setAuthError(null); // Clear error before navigating
-            navigate('/');
+            navigate("/");
           }, 2000);
         } else {
-          setAuthError(null);
           setSession(session);
           setIsAuthenticated(true);
         }
@@ -49,17 +53,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       handleAuthChange(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       handleAuthChange(session);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [toast, navigate]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, session, authError, setAuthError, setIsAuthenticated, setSession }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, session, setIsAuthenticated, setSession }}>
       {children}
     </AuthContext.Provider>
   );
@@ -68,7 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

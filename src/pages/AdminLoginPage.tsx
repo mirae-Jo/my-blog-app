@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { session, authError } = useAuth();
+  const { session } = useAuth();
 
   const signInWithGithub = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -34,11 +34,6 @@ const AdminLoginPage: React.FC = () => {
             Admin Login
           </h2>
         </div>
-        {authError && (
-          <div className="text-red-500 text-center p-2 bg-red-100 border border-red-400 rounded">
-            {authError}
-          </div>
-        )}
         <div className='mt-8 space-y-6'>
           {session ? (
             <button
