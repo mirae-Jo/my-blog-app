@@ -53,6 +53,9 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleAddPost = useCallback(async (title: string, content: string, imageUrl: string) => {
     const newId = uuidv4();
+    const now = new Date();
+    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+
     const { data, error } = await supabase
       .from("post")
       .insert({
@@ -60,6 +63,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title,
         content,
         img_url: imageUrl || null,
+        create_at: kstDate.toISOString(),
       })
       .select();
 

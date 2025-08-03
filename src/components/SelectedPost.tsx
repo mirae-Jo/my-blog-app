@@ -21,9 +21,12 @@ const SelectedPost: React.FC<SelectedPostProps> = ({ post }) => {
             : { backgroundColor: "#333" }
         }>
         <div className='absolute inset-0 bg-black opacity-30'></div>
-        <h4 className='relative z-10 font-bold text-4xl text-white text-center px-4'>
-          {post.title}
-        </h4>
+        <div className='relative z-10 text-white text-center px-4'>
+          <h4 className='font-bold text-4xl'>{post.title}</h4>
+          <p className='text-sm mt-2'>
+            {new Date(post.create_at).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric' })} {new Date(post.create_at).toLocaleTimeString("ko-KR", { hour: '2-digit', minute: '2-digit', hour12: true })}
+          </p>
+        </div>
       </div>
       <div className='p-10 prose max-w-none'>
         <ReactMarkdown
