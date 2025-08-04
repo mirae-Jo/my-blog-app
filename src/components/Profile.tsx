@@ -85,7 +85,7 @@ const Profile: React.FC = () => {
       <div>
         <h2 className='text-6xl text-black drop-shadow-lg mb-0.5'>미래</h2>
         <p className='text-gray-400 text-[1.1rem]'>
-          Frontend Developer | 포챠코 Lover | 소비 중독
+          Frontend Developer | Deco 중독 | Gemini CLI Lover | Bunnies
         </p>
       </div>
     </div>
