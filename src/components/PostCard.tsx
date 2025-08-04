@@ -9,7 +9,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, onClick, isSelected }) => {
   const cardClasses = `flex-shrink-0 w-56 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 snap-start flex flex-col ${
-    isSelected ? "opacity-70" : "cursor-pointer hover:scale-105"
+    isSelected ? "opacity-50" : "cursor-pointer hover:scale-105"
   }`;
 
   return (

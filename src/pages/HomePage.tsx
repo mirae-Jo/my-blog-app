@@ -97,7 +97,7 @@ const HomePage = () => {
 
           <div
             ref={scrollContainerRef}
-            className='flex overflow-x-auto space-x-6 py-6 scroll-smooth scroll-container snap-x snap-mandatory'
+            className='flex overflow-x-auto space-x-6 pt-6 pb-10 scroll-smooth scroll-container snap-x snap-mandatory'
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}>
             {posts.map((post) => (

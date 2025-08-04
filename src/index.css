@@ -22,3 +22,59 @@
   font-weight: 400;
   font-style: normal;
 }
+
+/* Custom scrollbar for the carousel */
+.scroll-container::-webkit-scrollbar {
+  height: 8px; /* height of horizontal scrollbar */
+  width: 8px; /* width of vertical scrollbar */
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent; /* Lighter background for the track */
+  border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #dde6e6e4; /* Lighter thumb */
+  border-radius: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #dde6e6e4; /* Slightly darker on hover */
+}
+
+/* For Firefox */
+.scroll-container {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: #dde6e6e4 transparent; /* thumb color track color */
+}
+
+/* Custom scrollbar for the entire page */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px; /* width of vertical scrollbar */
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #a8c0c084; /* Semi-transparent light grey thumb */
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #a8c0c084; /* Fully opaque light grey on hover */
+}
+
+/* For Firefox */
+html,
+body {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: #a8c0c084 transparent; /* thumb color track color */
+  overflow: overlay; /* For overlay scrollbars that don't take up space */
+}
