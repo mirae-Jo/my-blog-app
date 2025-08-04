@@ -99,6 +99,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [posts, selectedPost]);
 
+  
+
   return (
     <PostContext.Provider value={{ posts, selectedPost, setSelectedPost, fetchPosts, handleAddPost }}>
       {children}

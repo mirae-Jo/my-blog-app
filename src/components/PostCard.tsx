@@ -4,14 +4,19 @@ import type { Post } from "../context/PostContext";
 interface PostCardProps {
   post: Post;
   onClick: (post: Post) => void;
+  isSelected: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, onClick, isSelected }) => {
+  const cardClasses = `flex-shrink-0 w-56 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 snap-start flex flex-col ${
+    isSelected ? "opacity-70" : "cursor-pointer hover:scale-105"
+  }`;
+
   return (
     <div
       key={post.id}
-      className='flex-shrink-0 w-56 bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 cursor-pointer snap-start flex flex-col'
-      onClick={() => onClick(post)}>
+      className={cardClasses}
+      onClick={() => !isSelected && onClick(post)}>
       <div className='w-full h-48 bg-gray-200 flex-shrink-0'>
         {post.imageUrl && (
           <img

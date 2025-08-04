@@ -12,12 +12,26 @@ const HomePage = () => {
   const { isAuthenticated } = useAuth();
   const { posts, selectedPost, setSelectedPost } = usePosts();
 
-  const otherPosts = posts.filter((post) =>
-    selectedPost ? post.id !== selectedPost.id : true
-  );
+  const postsSectionRef = useRef<HTMLElement>(null);
+  const isFirstSelectedPostSet = useRef(true); // Changed from isInitialMount
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (selectedPost && postsSectionRef.current) {
+      if (isFirstSelectedPostSet.current) {
+        isFirstSelectedPostSet.current = false; // Mark that it's no longer the first time
+        // Do NOT scroll on initial load
+      } else {
+        // Scroll only if selectedPost is set due to user interaction
+        postsSectionRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  }, [selectedPost]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!scrollContainerRef.current) return;
@@ -68,7 +82,7 @@ const HomePage = () => {
         <Profile />
       </div>
       <main className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <section className='mt-18'>
+        <section ref={postsSectionRef} className='mt-18'>
           <div className='flex items-center justify-between mb-4'>
             <h3 className='text-[1.6rem] font-bold text-gray-700'>My Posts</h3>
             {isAuthenticated && (
@@ -83,16 +97,16 @@ const HomePage = () => {
 
           <div
             ref={scrollContainerRef}
-            className='flex overflow-x-auto space-x-6 pb-4 scroll-smooth scroll-container snap-x snap-mandatory'
+            className='flex overflow-x-auto space-x-6 py-6 scroll-smooth scroll-container snap-x snap-mandatory'
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}>
-            {otherPosts.length === 0 && !isAuthenticated && !selectedPost && (
-              <p className='text-gray-600 text-lg flex-shrink-0'>
-                No posts yet. Check back later!
-              </p>
-            )}
-            {otherPosts.map((post) => (
-              <PostCard key={post.id} post={post} onClick={setSelectedPost} />
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onClick={setSelectedPost}
+                isSelected={selectedPost ? post.id === selectedPost.id : false}
+              />
             ))}
           </div>
         </section>
