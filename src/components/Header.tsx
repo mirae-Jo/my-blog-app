@@ -1,15 +1,16 @@
 import React, { useState, type ChangeEvent, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from '../context/AuthContext';
+import basicCover from "../assets/basic_cover.jpeg";
 
 const Header: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const [coverImage, setCoverImage] = useState<string>(
-    "https://via.placeholder.com/1500x300"
-  );
+  const [coverImage, setCoverImage] = useState<string>(basicCover);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchCoverImage = async () => {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from("main_img")
         .select("url")
@@ -18,9 +19,11 @@ const Header: React.FC = () => {
 
       if (error) {
         console.error("Error fetching cover image:", error);
+        setCoverImage(basicCover);
       } else if (data) {
         setCoverImage(data.url);
       }
+      setIsLoading(false);
     };
 
     fetchCoverImage();
@@ -65,7 +68,7 @@ const Header: React.FC = () => {
   return (
     <header
       className='relative h-64 bg-gray-300 bg-cover bg-center group'
-      style={{ backgroundImage: `url(${coverImage})` }}>
+      style={{ backgroundImage: `url(${isLoading ? basicCover : coverImage})` }}>
       {isAuthenticated && (
         <div className='absolute top-0 left-0 w-full h-full flex justify-end items-start'>
           <div className='max-w-4xl mx-auto w-full relative'>

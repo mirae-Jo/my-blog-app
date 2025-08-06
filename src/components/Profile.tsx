@@ -1,15 +1,16 @@
 import React, { useState, type ChangeEvent, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import basicProfile from "../assets/basic_profile.jpeg";
 
 const Profile: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const [profileImage, setProfileImage] = useState<string>(
-    "https://via.placeholder.com/150"
-  );
+  const [profileImage, setProfileImage] = useState<string>(basicProfile);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from("profile_img")
         .select("url")
@@ -18,9 +19,11 @@ const Profile: React.FC = () => {
 
       if (error) {
         console.error("Error fetching profile image:", error);
+        setProfileImage(basicProfile);
       } else if (data) {
         setProfileImage(data.url);
       }
+      setIsLoading(false);
     };
 
     fetchProfileImage();
@@ -63,7 +66,7 @@ const Profile: React.FC = () => {
     <div className='relative -mt-20 flex items-end space-x-6'>
       <div className='relative group'>
         <img
-          src={profileImage}
+          src={isLoading ? basicProfile : profileImage}
           alt='Profile'
           className='w-36 h-36 rounded-full border-4 border-white bg-gray-200 object-cover'
         />
