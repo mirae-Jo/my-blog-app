@@ -103,12 +103,13 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (!githubResponse.ok) {
+          const responseText = await githubResponse.text(); // 응답 본문을 텍스트로 한 번만 읽음
           let errorDetails = 'Unknown error';
           try {
-            const errorJson = await githubResponse.json();
-            errorDetails = errorJson.error || errorJson.details || JSON.stringify(errorJson);
+            const errorJson = JSON.parse(responseText);
+            errorDetails = errorJson.error || errorJson.details || responseText;
           } catch (parseError) {
-            errorDetails = await githubResponse.text();
+            errorDetails = responseText;
           }
           console.error('Failed to commit post to GitHub:', errorDetails);
           alert('GitHub에 게시글 커밋 실패: ' + errorDetails);
