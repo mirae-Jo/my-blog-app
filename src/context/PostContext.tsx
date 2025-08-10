@@ -79,13 +79,40 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: data[0].title,
         content: data[0].content,
         imageUrl: data[0].img_url || undefined,
-        create_at: data[0].create_at,
+        create_at: new Date(data[0].create_at),
       };
       setPosts((prevPosts) => {
         const updatedPosts = [...prevPosts, newPost];
         setSelectedPost(newPost);
         return updatedPosts;
       });
+
+      // GitHub에 포스트 커밋을 위한 서버리스 함수 호출
+      try {
+        const githubResponse = await fetch('/api/create-github-post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: newPost.title,
+            content: newPost.content,
+            create_at: newPost.create_at.toISOString(),
+            imageUrl: newPost.imageUrl,
+          }),
+        });
+
+        if (!githubResponse.ok) {
+          const errorData = await githubResponse.json();
+          console.error('Failed to commit post to GitHub:', errorData);
+          alert('GitHub에 게시글 커밋 실패: ' + (errorData.error || 'Unknown error'));
+        } else {
+          console.log('Post successfully committed to GitHub.');
+        }
+      } catch (githubError) {
+        console.error('Error calling GitHub serverless function:', githubError);
+        alert('GitHub 연동 중 오류 발생.');
+      }
     }
   }, []);
 
