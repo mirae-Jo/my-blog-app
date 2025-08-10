@@ -58,7 +58,7 @@ ${content}
         body: JSON.stringify({
           message: `Add new post: ${title}`,
           content: Buffer.from(markdownContent).toString("base64"),
-          branch: "master",
+          branch: "main",
         }),
       }
     );
@@ -77,11 +77,9 @@ ${content}
     res.status(200).json({ message: "Post successfully committed to GitHub." });
   } catch (error) {
     console.error("Serverless function caught an error:", error);
-    res
-      .status(500)
-      .json({
-        error: "Internal server error.",
-        details: error instanceof Error ? error.message : String(error),
-      });
+    res.status(500).json({
+      error: "Internal server error.",
+      details: error instanceof Error ? error.message : String(error),
+    });
   }
 }
