@@ -59,7 +59,7 @@ ${content}
     console.log('GitHub API response status:', response.status);
 
     if (!response.ok) {
-      const errorText = await response.text(); // JSON이 아닐 수 있으므로 text()로 받음
+      const errorText = await response.text();
       console.error('GitHub API Error:', response.status, errorText);
       return res.status(response.status).json({ error: 'Failed to commit to GitHub', details: errorText });
     }
