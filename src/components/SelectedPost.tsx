@@ -20,7 +20,7 @@ const SelectedPost: React.FC<SelectedPostProps> = ({ post }) => {
             ? { backgroundImage: `url(${post.imageUrl})` }
             : { backgroundColor: "#333" }
         }>
-        <div className='absolute inset-0 bg-black opacity-5'></div>
+        <div className='absolute inset-0 bg-black opacity-10'></div>
         <div className='relative z-10 text-white text-center px-4'>
           <h4 className='font-bold text-4xl text-shadow-lg'>{post.title}</h4>
           <p className='text-sm mt-2 text-shadow-lg'>
