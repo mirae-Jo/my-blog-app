@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
       const filePath = `public/profile_photo_${Date.now()}_${file.name}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("covers")
+        .from("avatars")
         .upload(filePath, file, { cacheControl: "3600" });
 
       if (uploadError) {
@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
       }
 
       const { data: publicUrlData } = supabase.storage
-        .from("covers")
+        .from("avatars")
         .getPublicUrl(filePath);
 
       if (publicUrlData) {
