@@ -14,7 +14,7 @@ const SelectedPost: React.FC<SelectedPostProps> = ({ post }) => {
   return (
     <div className='bg-white rounded-xl shadow-lg mb-16'>
       <div
-        className='relative h-64 bg-cover bg-center flex items-center justify-center rounded-t-xl overflow-hidden'
+        className='relative h-80 bg-cover bg-center flex items-center justify-center rounded-t-xl overflow-hidden'
         style={
           post.imageUrl
             ? { backgroundImage: `url(${post.imageUrl})` }
