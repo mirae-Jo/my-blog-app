@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -22,10 +22,10 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
+          extensions?: Json
           operationName?: string
           query?: string
           variables?: Json
-          extensions?: Json
         }
         Returns: Json
       }
@@ -60,6 +60,7 @@ export type Database = {
           create_at: string
           id: string
           img_url: string | null
+          is_private: boolean
           title: string
         }
         Insert: {
@@ -67,6 +68,7 @@ export type Database = {
           create_at?: string
           id: string
           img_url?: string | null
+          is_private?: boolean
           title: string
         }
         Update: {
@@ -74,6 +76,7 @@ export type Database = {
           create_at?: string
           id?: string
           img_url?: string | null
+          is_private?: boolean
           title?: string
         }
         Relationships: []
@@ -98,10 +101,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

@@ -8,6 +8,7 @@ const CreatePostPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const { handleAddPost } = usePosts();
@@ -50,7 +51,7 @@ const CreatePostPage: React.FC = () => {
       }
     }
 
-    await handleAddPost(title, content, imageUrl);
+    await handleAddPost(title, content, imageUrl, isPrivate);
     setUploading(false);
     navigate("/");
   };
@@ -104,6 +105,18 @@ const CreatePostPage: React.FC = () => {
               className='shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out'
               onChange={handleFileChange}
             />
+          </div>
+          <div className='flex items-center mt-4'>
+            <input
+              type='checkbox'
+              id='isPrivate'
+              checked={isPrivate}
+              onChange={(e) => setIsPrivate(e.target.checked)}
+              className='mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+            />
+            <label htmlFor='isPrivate' className='text-gray-700 text-sm font-bold'>
+              Private Post (Only visible to admin)
+            </label>
           </div>
           <div className='flex justify-end space-x-4 mt-6'>
             <button

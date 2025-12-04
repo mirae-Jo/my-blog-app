@@ -106,6 +106,7 @@ const HomePage = () => {
                 post={post}
                 onClick={setSelectedPost}
                 isSelected={selectedPost ? post.id === selectedPost.id : false}
+                isAuthenticated={isAuthenticated}
               />
             ))}
           </div>
