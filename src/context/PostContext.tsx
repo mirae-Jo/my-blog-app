@@ -53,6 +53,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       const { data, error } = await query;
+      console.log("Supabase fetched data:", data);
 
       if (error) {
         console.error("Error fetching posts:", error);
@@ -76,7 +77,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isAuthenticated]);
 
   const handleAddPost = useCallback(
-    async (title: string, content: string, imageUrl: string) => {
+    async (title: string, content: string, imageUrl: string, isPrivate: boolean) => {
       const newId = uuidv4();
       const now = new Date();
       const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
@@ -89,6 +90,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
           content,
           img_url: imageUrl || null,
           create_at: kstDate.toISOString(),
+          is_private: isPrivate,
         })
         .select();
 
