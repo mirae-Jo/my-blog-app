@@ -22,7 +22,7 @@ interface PostContextType {
   posts: Post[];
   selectedPost: Post | null;
   setSelectedPost: (post: Post | null) => void;
-  fetchPosts: () => Promise<void>;
+  fetchPosts: () => Promise<Post[] | null>;
   handleAddPost: (
     title: string,
     content: string,
@@ -40,24 +40,21 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const { isAuthenticated } = useAuth();
 
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(async (): Promise<Post[] | null> => {
     try {
       let query = supabase
         .from("post")
         .select("id, title, content, img_url, create_at, is_private")
         .order("create_at", { ascending: false });
-      console.log("fetchPosts - isAuthenticated:", isAuthenticated);
       if (!isAuthenticated) {
-        console.log("비로그인상태");
         query = query.eq("is_private", false);
       }
 
       const { data, error } = await query;
-      console.log("Supabase fetched data:", data);
 
       if (error) {
         console.error("Error fetching posts:", error);
-        return;
+        return null; // Return null on error
       }
 
       if (data) {
@@ -69,15 +66,22 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
           create_at: post.create_at,
           is_private: post.is_private,
         }));
-        setPosts(fetchedPosts);
+        return fetchedPosts; // Return the fetched data
       }
+      return []; // Return empty array if no data
     } catch (networkError) {
       console.error("Network error fetching posts:", networkError);
+      return null; // Return null on network error
     }
   }, [isAuthenticated]);
 
   const handleAddPost = useCallback(
-    async (title: string, content: string, imageUrl: string, isPrivate: boolean) => {
+    async (
+      title: string,
+      content: string,
+      imageUrl: string,
+      isPrivate: boolean
+    ) => {
       const newId = uuidv4();
       const now = new Date();
       const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
@@ -158,8 +162,22 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts, isAuthenticated]);
+    let active = true; // Local flag to prevent state updates on unmounted component
+
+    const loadAndSetPosts = async () => {
+      const fetchedData = await fetchPosts(); // Call fetchPosts, which now returns data
+      if (active && fetchedData !== null) {
+        // Check active flag before setting state
+        setPosts(fetchedData);
+      }
+    };
+
+    loadAndSetPosts();
+
+    return () => {
+      active = false; // Cleanup: component is unmounted
+    };
+  }, [isAuthenticated, fetchPosts]);
 
   useEffect(() => {
     if (posts.length > 0 && selectedPost === null) {

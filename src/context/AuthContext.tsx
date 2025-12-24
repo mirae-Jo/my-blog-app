@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         } else {
           setSession(session);
           setIsAuthenticated(true);
-          console.log("AuthContext: isAuthenticated set to TRUE");
         }
       } else {
         setSession(null);
