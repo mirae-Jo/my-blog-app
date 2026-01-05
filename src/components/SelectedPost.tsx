@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 
 import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import type { Post } from "../context/PostContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -39,9 +40,9 @@ const SelectedPost: React.FC<SelectedPostProps> = ({ post }) => {
           </p>
         </div>
       </div>
-      <div className='p-10 prose max-w-none'>
+      <div className='p-10 prose max-w-none markdown-body'>
         <ReactMarkdown
-          remarkPlugins={[remarkBreaks]}
+          remarkPlugins={[remarkBreaks, remarkGfm]}
           components={{
             pre: (props) => <pre className='not-prose' {...props} />,
             code: ({
